@@ -1,9 +1,9 @@
 # OCaml
 
-*Lab1
+* Lab1
 
-*lab2
+* Lab2
 
-*lab3
+* Lab3
 
-*lab4
+* Lab4
