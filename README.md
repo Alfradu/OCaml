@@ -1,6 +1,6 @@
 # OCaml
 
-* [Lab 1](OCaml/Ocaml Lab1.ml)
+* [Day 1: Inverse Captcha](day1puzzle1/day1puzzle1/Program.cs)
 
 * Lab2
 
