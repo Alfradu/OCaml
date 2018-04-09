@@ -16,9 +16,8 @@ module ListPhoneBook : PHONEBOOK =
     exception PersonTooFat
     type fbook = (string * string) list
     let emptyfbook = []
-    let rec add_entry (person, number, book) =
-      match book with
-      [] -> [(person, number)]
+    let rec add_entry (person, number, book) = match book with
+      [] -> [fbook(person, number)] (* <- Konstigt syntax-fel *)
       | [(p,n)::t] -> if p = person
                       then (p, number)::t
                       else (p,n)::(add_entry(person, number, book))
@@ -41,8 +40,8 @@ module ListPhoneBook : PHONEBOOK =
       | [(p,n)::t] -> "(" ^ p ^ ", " ^ n ^ ")" ^ (display_book t)
 end;;
 
-module ArrayPhoneBook : PHONEBOOK =
   struct
+  module ArrayPhoneBook : PHONEBOOK =
     type fbook = (string * string) array
     exception PersonNotFound
     exception PersonTooFat
@@ -55,9 +54,9 @@ module ArrayPhoneBook : PHONEBOOK =
         if i = !c
         then -1
         else
-            if (fst (book.(i))) = name
-            then i
-            else find (i+1,name,book)
+          if (fst (book.(i))) = name
+          then i
+          else find (i+1,name,book)
       in
         find (0,name,book)
 
@@ -102,3 +101,37 @@ module ArrayPhoneBook : PHONEBOOK =
             display_b (book, 0)
         else ""
       end;;
+
+(* FÖRELÄSNINGANTECKNINGAR *)
+(*
+the appropriate search algoritm often depends on the data structure being searched
+listor > Arrays
+mechanism x complexity
+sorterat gör det EZ!!!
+
+
+
+
+*)
+
+(*Lineär Sörch*) :(
+exception Search_Failed;;
+let rec search (key, a, f, l) =
+  if f>l
+  then raise Search_Failed
+  else (let (k, v) = a.(f)
+        in if key = k
+          then v
+          else search (key, a ,f+1, l));;
+
+  let arr = [|(3,"Steve");(2,"Bob");(4,"Boeb");(1,"Boob");(7,"Beb");(5,"Beob")|];;
+
+# search (2,arr,0,1);;
+# - : string = "Bob"
+
+(*Binary Search*)
+let rec bsearch (key, a, l, r) =
+  if l>r
+  then raise Search_Failed
+  else (let mid = (l+r)/2 in
+        let (k,v) = a.(mid)) 
