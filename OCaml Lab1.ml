@@ -85,8 +85,8 @@ module TinyRelationalAlgebra : TABLE =
       match column(attribute, values) with
         (_ ,[])     -> []
       | (_,[h::t])  -> if val = h
-                       then [true]::(generateBoolList(t))
-                       else [false]::(generateBoolList(t))
+                       then ["true"]::(generateBoolList(t))
+                       else ["false"]::(generateBoolList(t))
 
     (* getColumn *)
     (* returns a column of a given attribute.*)
