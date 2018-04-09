@@ -1,6 +1,6 @@
 # OCaml
 
-* [Day 1: Inverse Captcha](OCaml/OCaml.ml)
+* [Lab1 RelAlg](OCaml/Lab1_OCaml.ml)
 
 * Lab2
 
