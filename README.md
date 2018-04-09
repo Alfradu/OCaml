@@ -1,6 +1,6 @@
 # OCaml
 
-* [Lab1 RelAlg](OCaml/OCaml%20Lab1.ml)
+* [Lab1 RelAlg](OCaml/blob/master/OCaml%20Lab1.ml)
 
 * Lab2
 
