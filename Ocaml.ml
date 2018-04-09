@@ -102,19 +102,7 @@ end;;
         else ""
       end;;
 
-(* FÖRELÄSNINGANTECKNINGAR *)
-(*
-the appropriate search algoritm often depends on the data structure being searched
-listor > Arrays
-mechanism x complexity
-sorterat gör det EZ!!!
-
-
-
-
-*)
-
-(*Lineär Sörch*) :(
+(* Lineär Search *)
 exception Search_Failed;;
 let rec search (key, a, f, l) =
   if f>l
@@ -124,14 +112,56 @@ let rec search (key, a, f, l) =
           then v
           else search (key, a ,f+1, l));;
 
-  let arr = [|(3,"Steve");(2,"Bob");(4,"Boeb");(1,"Boob");(7,"Beb");(5,"Beob")|];;
+  let arr = [|(3,"Steve");(2,"Bob")|];;
 
 # search (2,arr,0,1);;
 # - : string = "Bob"
 
-(*Binary Search*)
+(* Bineär Särch*)
 let rec bsearch (key, a, l, r) =
   if l>r
   then raise Search_Failed
   else (let mid = (l+r)/2 in
-        let (k,v) = a.(mid)) 
+        let (k,v) = a.(mid)
+        in if key=k
+          then v
+          else (if k>key
+                then bsearch (key,a,l,mid-1)
+                else bsearch (key,a,mid+1,r) ));;
+
+# let arr2 = [|(2,'a');(3,'b');(5,'c');(6,'d');(7,'e');(8,'f');(9,'h')|];;
+# bsearch (5,arr,0,6);;
+- : char = 'c'# bsearch (9,arr,0,6);;
+- : char = 'h'
+
+(*Hash functions, modulo and stuff, buckets*)
+
+(*Quicksort*)
+(*
+"Divide and conquer" algoritm: delar upp stora arrayer i två små
+sub-arrayer som blir de lägre elementen och de höga elementen.
+
+Består av tre steg: Pivotering, Partitionering, Rekursion.
+Pivotering:
+väljer ett element från arrayen.
+Partitionering:
+Arrangerar om arrayen så att alla element som är
+mindre än det valda "pivot"-elementet hamnar innan "pivot"-elementet
+högre värden hamnar efter.
+Rekursion:
+detta appliceras om och om igen på alla sub-arrayer *)
+
+(* Partiotioning for Quicksort*)
+let rec split (a, pivot, i, j, hi)
+  if i>j
+  then (swap (a,i,hi); i)
+  else if a.(i) <= pivot
+       then split (a,pivot,i+1,j,hi)
+       else if (a.(i) > pivot) && (a.(j) <= pivot)
+            then (swap (a,i,j);
+              split (a,pivot,i+1,j-1,hi) )
+            else split (a,pivot,i,j-1,hi) ;;
+
+let partition (a,lo,hi) = split (a,a.(hi),lo,hi-1,hi);;
+(*Denna partitionering låter oss placera lägre element under pivoten 
+och högre element över pivoten. Den ger oss inte en sorterad lista.*)
