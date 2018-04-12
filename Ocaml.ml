@@ -195,3 +195,34 @@ let bfst q =
   else match qhd(q) with
      Leaf          -> bfst(deq q)
    | (Node(l,v,r)) -> v::(bfst(enq(enq(deq(q),l),r)))
+
+(* Tree balancing*)
+(* Define the slope of a tree*)
+let slope l =
+  match l with
+    Leaf -> 0
+    | (Node (t1,a,t2)) -> (height t1) - (height t2)
+(* If |slope s| <= 1 for every subtree, the tree is balanced*)
+
+(* Rotating trees *)
+let rot_left = function
+  (Node (t1, a1, Node(t2, a2, t3))) -> Node (Node (t1, a1, t2), a2, t3)
+
+let rot_right = function
+  (Node (Node (t1, a1, t2), a2, t3)) -> (t1, a1, Node(t2, a2, t3))
+
+(* Rebalance trees and shift *)
+let rebal t =
+  match (slope t) with
+      2 -> shiftr t
+    | -2 -> shiftl t
+    | _ -> t
+
+let shiftr = function
+  (Node (t1, a, t2)) -> if (slope t1 = -1)
+                        then rot_right (Node (rot_left t1, a, t2))
+                        else rot_right (Node (t1, a, t2))
+let shiftl = function
+  (Node (t1, a, t2)) -> if (slope t2 = 1)
+                        then rot_left (Node (t1, a, rot_right t2))
+                        else rot_left (Node (t1, a, t2))
