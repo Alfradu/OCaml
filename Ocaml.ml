@@ -163,5 +163,35 @@ let rec split (a, pivot, i, j, hi)
             else split (a,pivot,i,j-1,hi) ;;
 
 let partition (a,lo,hi) = split (a,a.(hi),lo,hi-1,hi);;
-(*Denna partitionering låter oss placera lägre element under pivoten 
+(*Denna partitionering låter oss placera lägre element under pivoten
 och högre element över pivoten. Den ger oss inte en sorterad lista.*)
+
+(* Trees *)
+(* In-order traversal *)
+let rec inorder t =
+  match t with
+    Leaf             -> []
+  | (Node (t1,n,t2)) -> (inorder t1) @ (n::(inorder t2))
+
+(* Pre-order traversal *)
+let rec preorder t =
+  match t with
+    Leaf             -> []
+  | (Node (t1,n,t2)) -> n::(preorder(t1) @ preorder(t2))
+
+(* Post-order traversal *)
+(* depth-first, left->right*)
+let rec postorder t =
+  match t with
+    Leaf             -> []
+  | (Node (t1,n,t2)) -> (postorder(t1) @ postorder(t2)) @ [n]
+
+(* Breadth first traversal with queues *)
+let breadthfirst t = bfst (enq(empty, t))
+
+let bfst q =
+  if qnull q
+  then []
+  else match qhd(q) with
+     Leaf          -> bfst(deq q)
+   | (Node(l,v,r)) -> v::(bfst(enq(enq(deq(q),l),r)))

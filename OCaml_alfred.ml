@@ -2,7 +2,7 @@ exception ColumnDoesNotExist
 exception TableDoesNotExist
 type attribute = string
 type attributes = attribute list
-type dcolumn = string * attributes
+type dcolumn = string * attributes list
 type dtable = string * dcolumn list
 type relalg = Project of (string list * string)
             | Rename of (string * string * string)
@@ -22,19 +22,20 @@ let snd(a,b) = b
 (* Projection *)
 let rec projection (attributes, dtable) =
   match attributes with
-    []     -> dtable
-  | [h::t] -> getColumn(dtable, h); projection([t], dtable)
-
+    []     -> []
+  | h::t -> getColumn(dtable, h)::projection(t, dtable)
 
 (* Rename *)
-let rec rename (attOld, attNew, dtable) =
-  match dtable(name, dcolumn) with
-    none      -> raise TableDoesNotExist
-  | (_,[])     -> dtable
-  | (_,[h::t]) -> if fst(h) = attOld
-                     then fst(h) = attNew; h::rename(attOld, attNew, (name, t))
-                     else h::rename(attOld, attNew, (name, t))
+let rename (attOld, attNew, dtable) =
+  match dtable with
+    (name, dcolumn) -> (name, replace(attOld, attNew, dcolumn))
 
+let rec replace (attOld, attNew, dcolumn) =
+  match dcolumn with
+    []     -> raise ColumnDoesNotExist
+    | h::t -> if fst(h) = attOld
+              then (attNew, snd(h))::t
+              else h::(replace(attOld, attNew, t))
 
 (* Restrict *)
 let restriction (attribute, val, dtable) =
@@ -65,9 +66,9 @@ let eval (q, newtable, database) =
 let rec getColumn (dtable, attribute) =
   match dtable with
     (name, [])     -> raise ColumnDoesNotExist
-  | (name, [h::t]) -> if fst(h) = attribute
+  | (name, (att, h::t)) -> if fst(h) = attribute
                       then snd(h)
-                      else getColumn((name, [t]), attribute)
+                      else getColumn((name, t), attribute)
 
 let rec generateBoolList (val, column) =
   match (val, column) with

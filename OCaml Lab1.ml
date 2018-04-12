@@ -28,11 +28,13 @@ module TinyRelationalAlgebra : TABLE =
     let newAttributes = []
     let newDcolumns = []
     let newDtable = []
+
 (* PROJECTION *)
     let rec projection (attributes, dtable) =
       match attributes with
         []     -> ""
       | [h::t] -> getColumn(dtable, h); projection(t, dtable)
+
 (* REPLACE *)
     let rename (attOld, attNew, dtable) =
       match dtable(name, dcolumn) with
@@ -43,6 +45,7 @@ module TinyRelationalAlgebra : TABLE =
       | [h::t] -> if fst(h) = attOld
                   then fst(h) = attNew; h::(replace(attOld, attNew, (name, t)))
                   else h::(replace(attOld, attNew, (name, t)))
+
 (* RESTRICTION *)
     let restriction (attribute, val, dtable) =
       let boolList = generateBoolList(val, getColumn(dtable, attribute)) in
@@ -58,6 +61,7 @@ module TinyRelationalAlgebra : TABLE =
       | ([h1::t1],[h2::t2]) -> if h1 = true
                                then h2::(restrictColumn(t1, t2))
                                else restrictColumn(t1, t2)
+                               
 (* GENERAL FUNCTIONS *)
     (* GenerateBoolList *)
     (* generates a list of booleans.*)
