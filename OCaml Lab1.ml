@@ -78,6 +78,6 @@ let rec lookup (var, env) =
 
 let eval (relalg, newtable, database) =
   match relalg with
-       (Project(attribs, table))            -> let ntable = lookup(table, !database) in (newtable, projection(attribs, ntable))::(!dbase)
-    |  (Rename (oldatrib, newatrib, table)) -> let ntable = lookup(table, !database) in (newtable, rename(oldatrib, newatrib, ntable))::(!dbase)
-    |  (Restrict (atrib, value, table))     -> let ntable = lookup(table, !database) in (newtable, restriction(atrib, value, ntable))::(!dbase)
+       (Project(attribs, table))            -> let ntable = lookup(table, !database) in dbase := (newtable, projection(attribs, ntable))::(!dbase); !dbase
+    |  (Rename (oldatrib, newatrib, table)) -> let ntable = lookup(table, !database) in dbase := (newtable, rename(oldatrib, newatrib, ntable))::(!dbase); !dbase
+    |  (Restrict (atrib, value, table))     -> let ntable = lookup(table, !database) in dbase := (newtable, restriction(atrib, value, ntable))::(!dbase); !dbase
