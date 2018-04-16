@@ -2,8 +2,4 @@
 
 * [Lab1 RelAlg](OCaml%20Lab1.ml)
 
-* Lab2
-
-* Lab3
-
-* Lab4
+* [Lab2 Board Game Player](OCaml%20Lab2.ml)
