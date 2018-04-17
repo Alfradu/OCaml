@@ -219,6 +219,13 @@ let rec win_all gt piece =
 
 (*Task d: Use the result of task c to find the shortest winning
 game possible for a given player. *)
+let test = []
+let rec shorttest movelist =
+  match movelist with
+    []   -> movelist
+  | h::t -> if List.length h < List.length (shorttest t)
+            then h
+            else shorttest t
 
 (*Task e: Deduce the best move that a given player should take on a given board.
 In other words, which move is most likely to get a win compared to others. *)
