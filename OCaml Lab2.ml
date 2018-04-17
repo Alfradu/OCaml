@@ -177,7 +177,6 @@ let rec search_win gt piece =
     | (O_wins,O)     -> true
     | _              -> false)
   | Level (b, gl) -> loop_through gl piece
-
 and loop_through gl piece =
   match gl with
     []   -> false
@@ -194,13 +193,12 @@ let rec win_tree gt piece =
     NillGame -> []
   | Level (b,[]) ->
     (match (calc_status b,piece) with
-      (X_wins,X)     -> b
-    | (O_wins,O)     -> b
+      (X_wins,X)     -> [b]
+    | (O_wins,O)     -> [b]
     | _              -> [])
   | Level (b,gl::t) -> if search_win gl piece
-                       then b @ (win_tree gl piece)
+                       then [b] @ (win_tree gl piece)
                        else loop t piece
-
 and loop gl piece =
   match gl with
     []   -> []
@@ -211,7 +209,13 @@ and loop gl piece =
 (*Task c: Write a function that returns all winning lists of
 moves for a given player and a board. *)
 
-
+let rec win_all gt piece =
+  match gt with
+    NillGame -> []
+  | Level (b , []) -> []
+  | Level (b , h::t) -> if search_win gt piece
+                        then [b::(win_tree gt piece)] @ win_all (Level(b,t)) piece
+                        else win_all (Level(b,t)) piece
 
 (*Task d: Use the result of task c to find the shortest winning
 game possible for a given player. *)
