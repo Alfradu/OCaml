@@ -167,7 +167,8 @@ and gen_next_limited_level piece ms depth =
     and returns true if that player can win the game.
     This function should perform a depth-first search and
     look at terminal nodes using calc_status. *)
-let game1 = [[O; X; Empty]; [X; O; Empty]; [Empty; X; Empty]];;
+    
+let game = [[O; Empty; Empty]; [O; X; Empty]; [X; O; X]];;
 
 let rec search_win gt piece =
   match gt with
@@ -232,27 +233,30 @@ let rec shortest movelist =
 (*Task e: Deduce the best move that a given player should take on a given board.
 In other words, which move is most likely to get a win compared to others. *)
 
-let rec lose_all gt piece =
+let rec terminal_nodes gt =
   match gt with
-    NillGame -> []
-  | Level (b , [])   -> []
-  | Level (b , h::t) -> if search_win gt (swap_piece piece)
-                        then [win_tree gt (swap_piece piece)] @ (lose_all (Level(b,t)) piece)
-                        else (lose_all (Level(b,t)) piece);;
+    NillGame -> 0
+    | Level (b , [])   -> 1
+    | Level (b , h::t) -> terminal_nodes h + loop_nodes t
+and loop_nodes gl =
+  match gl with
+        []   -> 0
+      | h::t -> terminal_nodes h  + loop_nodes t;;
 
-let rec ratio nodelist piece=
+let rec ratio nodelist piece =
   match nodelist with
     []   -> []
-  | hg::t -> (match hg with
+  | hg::t ->  match hg with
                   NillGame -> []
                 | Level (b , []) -> (match (calc_status b,piece) with
                                       (X_wins,X)     -> [b]
                                     | (O_wins,O)     -> [b]
                                     | _              -> [])
-                | Level (b , h::ht) ->
-            if float_of_int(List.length (win_all hg piece)) /. float_of_int(List.length (win_all hg piece) + List.length (lose_all hg piece)) >= float_of_int(List.length (ratio t piece))
-            then [b]
-            else ratio t piece );;
+                | Level (b , h::ht) -> (if terminal_nodes (gen_games piece b) > 0 && List.length (win_all hg piece) > 0
+                                        then if float_of_int (List.length (win_all hg piece)) /. float_of_int (terminal_nodes (gen_games piece b)) >= float_of_int (List.length (ratio t piece))
+                                             then [b]
+                                             else ratio t piece
+                                        else ratio t piece )
 
 let recommend_move gt piece =
   match gt with
@@ -260,16 +264,20 @@ let recommend_move gt piece =
   | Level (b, [])   -> []
   | Level (b, h::t) -> ratio (h::t) piece;;
 
+  (*
+  HELLO GUYSSS
+  OOPS i dropped my code
 
+  let calcOdds player game =
+      let otherPlayer = if player = O then X else O in
+      let possibleWinsPlayer1 = length (allWinningMoves player game) in
+      let possibleWinsPlayer2 = length (allWinningMoves otherPlayer game) in (fusk btw)
+          if possibleWinsPlayer1 > 0
+          then
+               if possibleWinsPlayer2 > 0
+               then float_of_int(possibleWinsPlayer1) /. float_of_int(possibleWinsPlayer1 + possibleWinsPlayer2)
+               else 1
+          else 0;;
 
-
-
-
-
-
-
-
-
-
-
-  e
+  wtf
+  *)
