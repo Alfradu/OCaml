@@ -167,6 +167,7 @@ and gen_next_limited_level piece ms depth =
     and returns true if that player can win the game.
     This function should perform a depth-first search and
     look at terminal nodes using calc_status. *)
+let game1 = [[O; X; Empty]; [X; O; Empty]; [Empty; X; Empty]];;
 
 let rec search_win gt piece =
   match gt with
@@ -204,7 +205,7 @@ and loop gl piece =
     []   -> []
   | gt::t -> if search_win gt piece
             then win_tree gt piece
-            else loop t piece
+            else loop t piece;;
 
 (*Task c: Write a function that returns all winning lists of
 moves for a given player and a board. *)
@@ -212,20 +213,63 @@ moves for a given player and a board. *)
 let rec win_all gt piece =
   match gt with
     NillGame -> []
-  | Level (b , []) -> []
+  | Level (b , [])   -> []
   | Level (b , h::t) -> if search_win gt piece
-                        then [b::(win_tree gt piece)] @ win_all (Level(b,t)) piece
-                        else win_all (Level(b,t)) piece
+                        then [win_tree gt piece] @ (win_all (Level(b,t)) piece)
+                        else (win_all (Level(b,t)) piece);;
 
 (*Task d: Use the result of task c to find the shortest winning
 game possible for a given player. *)
-let test = []
-let rec shorttest movelist =
+
+let rec shortest movelist =
   match movelist with
-    []   -> movelist
-  | h::t -> if List.length h < List.length (shorttest t)
-            then h
-            else shorttest t
+    []    -> []
+  | h::[] -> h
+  | h::t  -> if List.length h < List.length (shortest t)
+             then h
+             else shortest t;;
 
 (*Task e: Deduce the best move that a given player should take on a given board.
 In other words, which move is most likely to get a win compared to others. *)
+
+let rec lose_all gt piece =
+  match gt with
+    NillGame -> []
+  | Level (b , [])   -> []
+  | Level (b , h::t) -> if search_win gt (swap_piece piece)
+                        then [win_tree gt (swap_piece piece)] @ (lose_all (Level(b,t)) piece)
+                        else (lose_all (Level(b,t)) piece);;
+
+let rec ratio nodelist piece=
+  match nodelist with
+    []   -> []
+  | hg::t -> (match hg with
+                  NillGame -> []
+                | Level (b , []) -> (match (calc_status b,piece) with
+                                      (X_wins,X)     -> [b]
+                                    | (O_wins,O)     -> [b]
+                                    | _              -> [])
+                | Level (b , h::ht) ->
+            if float_of_int(List.length (win_all hg piece)) /. float_of_int(List.length (win_all hg piece) + List.length (lose_all hg piece)) >= float_of_int(List.length (ratio t piece))
+            then [b]
+            else ratio t piece );;
+
+let recommend_move gt piece =
+  match gt with
+    NillGame        -> []
+  | Level (b, [])   -> []
+  | Level (b, h::t) -> ratio (h::t) piece;;
+
+
+
+
+
+
+
+
+
+
+
+
+
+  e

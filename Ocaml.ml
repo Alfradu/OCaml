@@ -226,3 +226,47 @@ let shiftl = function
   (Node (t1, a, t2)) -> if (slope t2 = 1)
                         then rot_left (Node (t1, a, rot_right t2))
                         else rot_left (Node (t1, a, t2))
+
+(* Graphs *)
+let rec add_to_front v lts =
+  match lts with
+    [] -> []
+  | (X::xs) -> (v::x)::(add_to_front v xs);;
+
+let rec depth_first v adj visited =
+  if mem v visited
+  then [[]]
+  else match (lookup (v,adj)) with
+        [] -> []
+      | (h::t) ->
+        let curr = depth_first h adj (v::visited) in
+        let nxt = depth_list t adj (v::visited)
+        in add_to_front v (curr@nxt)
+
+and depth_list l adj visited =
+  match l with
+    [] -> []
+  | (x::xs) -> (depth_first x adj visited) @ (depth_list xs adj visited);;
+
+let rec get_zero_vertex l =
+  match l with
+    ((c,0,heads)::rst) -> ((c,0,heads)::)
+
+(* Shortest path algorithm (Dijkstra) *)
+let rec sumpath l =
+  match l with
+    [] -> 0
+  | ((n,d)::t) -> d + (sumpath t);;
+
+let min_path (p1,p2) =
+  if
+
+let rec walk node curlst paths =
+  match curlst with
+    [] -> paths
+  | ((v,d)::t) ->
+    let curshort = lookup v paths in
+    let altpath = lookup node paths in
+    let newp = min_path (curshort, (v,d)::altpath) in
+    let newpaths = update (v,newp) paths
+    in walk node t newpaths;;
