@@ -233,7 +233,7 @@ let rec allWinningMoves gt piece =
                                       else []
     |   Level(current, next::rest) -> if allWinningMoves next piece = []
                                       then allWinningMoves next piece @ allWinningMoves (Level(current, rest)) piece
-                                      else addToFront [current] (allWinningMoves player next) @ allWinningMoves player (Level(current, rest));;
+                                      else addToFront [current] (allWinningMoves next piece) @ allWinningMoves (Level(current, rest)) piece;;
 
 (*Task d: Use the result of task c to find the shortest winning
 game possible for a given player. *)
@@ -268,48 +268,14 @@ let rec ratio nodelist piece =
                                       (X_wins,X)     -> [b]
                                     | (O_wins,O)     -> [b]
                                     | _              -> [])
-                | Level (b , h::ht) -> (if terminal_nodes (gen_games piece b) > 0 && List.length (allWinningMoves piece hg []) > 0
-                                        then if float_of_int (List.length (allWinningMoves piece hg [])) /. float_of_int (terminal_nodes (gen_games piece b)) >= float_of_int (List.length (ratio t piece))
+                | Level (b , h::ht) -> (if terminal_nodes (gen_games piece b) > 0 && List.length (allWinningMoves hg piece) > 0
+                                        then if float_of_int (List.length (allWinningMoves hg piece)) /. float_of_int (terminal_nodes (gen_games piece b)) >= float_of_int (List.length (ratio t piece))
                                              then [b]
                                              else ratio t piece
-                                        else ratio t piece )
+                                        else ratio t piece );;
 
 let recommend_move gt piece =
   match gt with
     NillGame        -> []
   | Level (b, [])   -> []
   | Level (b, h::t) -> ratio (h::t) piece;;
-
-
-
-(* Experimental top sekret*)
-
-let rec exists board list =
-    match list with
-        [] -> false
-    |   (h::t) -> if board = h then true else false;;
-
-let rec removePreviousWin game visited =
-    match game with
-        NillGame                              -> NillGame
-    |   Level (current, [])                   -> if exists current visited then NillGame else game
-    |   Level (current, next::[])             -> Level (current, (removePreviousWin next visited)::[])
-    |   Level (current, next::nextnext::rest) -> Level (current, (removePreviousWin next visited)::
-                                                                 (removePreviousWin nextnext visited)::rest);;
-
-let rec terminalNode boardlist =
-    match boardlist with
-        [] -> []
-    |   h::[] -> h
-    |   h::t -> terminalNode t;;
-
-let rec allWinningMoves player game visited =
-    let newGame = removePreviousWin game visited in
-    match newGame with
-        NillGame                    -> []
-    |   Level (current, [])         -> []
-    |   Level (current, move::rest) -> if search_win move player
-                                       then
-                                           let win = win_tree move player in
-                                           [win] @ allWinningMoves player newGame ((terminalNode win)::visited)
-                                       else allWinningMoves player (Level(current, rest)) visited;;
