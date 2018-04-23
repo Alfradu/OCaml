@@ -215,25 +215,20 @@ moves for a given player and a board. *)
 let rec addToFront move l =
     match l with
         []    -> [move]
-    |   h::[] -> (move @ h) :: []
+    |   h::[] -> [move @ h]
     |   h::t  -> (move @ h) :: addToFront move t;;
-
-let checkCurrent board piece =
-  let status = calc_status board in
-    match (status, piece) with
-      (X_wins,X)     -> true
-    | (O_wins,O)     -> true
-    | _              -> false;;
 
 let rec allWinningMoves gt piece =
     match gt with
-        NillGame                   -> []
-    |   Level(current, [])         -> if checkCurrent current piece
-                                      then [[current]]
-                                      else []
-    |   Level(current, next::rest) -> if allWinningMoves next piece = []
-                                      then allWinningMoves next piece @ allWinningMoves (Level(current, rest)) piece
-                                      else addToFront [current] (allWinningMoves next piece) @ allWinningMoves (Level(current, rest)) piece;;
+        NillGame         -> []
+    |   Level(board, []) -> (
+      match (calc_status board, piece) with
+        (X_wins,X)     -> [[board]]
+      | (O_wins,O)     -> [[board]]
+      | _              -> [])
+    |   Level(board, h::t) -> if allWinningMoves h piece = []
+                                 then allWinningMoves h piece @ allWinningMoves (Level(board, t)) piece
+                                 else addToFront [board] (allWinningMoves h piece) @ allWinningMoves (Level(board, t)) piece;;
 
 (*Task d: Use the result of task c to find the shortest winning
 game possible for a given player. *)
@@ -279,3 +274,30 @@ let recommend_move gt piece =
     NillGame        -> []
   | Level (b, [])   -> []
   | Level (b, h::t) -> ratio (h::t) piece;;
+
+
+(* alternative solution task e*)
+let addWins (x1,o1,d1) (x2,o2,d2) = (x1+x2,o1+o2,d1+d2);;
+
+let rec numberOfWins game (x,o,d) =
+    match game with
+        NillGame           -> (0,0,0)
+    |   Level(current, []) -> (match calc_status current with
+                                   Unfinished -> (x,o,d)
+                               |   Draw       -> (x,o,d+1)
+                               |   X_wins     -> (x+1,o,d)
+                               |   O_wins     -> (x,o+1,d))
+    |   Level(current, next::rest) -> addWins (numberOfWins next (x,o,d)) (numberOfWins (Level(current, rest)) (x,o,d));;
+
+let calcPlayer player (x,o,d) =
+    match player with
+        Empty -> 0.0
+    |   X     -> if x > 0 then float_of_int x /. float_of_int (x+o+d) else 0.0
+    |   O     -> if o > 0 then float_of_int o /. float_of_int (o+x+d) else 0.0;;
+
+let rec getOdds player game =
+    match game with
+        NillGame                   -> []
+    |   Level(current, [])         -> []
+    |   Level(current, NillGame::_) -> []
+    |   Level(current, Level(b,l)::rest) -> (b, (calcPlayer player (numberOfWins (Level(b,l)) (0,0,0)) ) *. 100.0) :: getOdds player (Level(current, rest));;
