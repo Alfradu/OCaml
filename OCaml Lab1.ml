@@ -4,7 +4,7 @@ type dcolumn = string * attribute list;;
 type dtable = string * dcolumn list;;
 type dbase = dtable list;;
 
-(* Type declaration for Task 1 TRA*)
+(* Type declaration for Task 2 TRA*)
 type relalg = Project of (string list * string)
             | Rename of (string * string * string)
             | Restrict of (string * string * string);;
@@ -28,7 +28,7 @@ let rec getColumn (dtable, attribute) =
                         then (a,b)
                         else getColumn((name, t), attribute);;
 
-(* Function generateBoolList takes a value and a column.
+(* Function "generateBoolList" takes a value and a column.
    Returns a generated list of string "booleans" for it. *)
 let rec generateBoolList (a, column) =
   match column with
@@ -92,6 +92,7 @@ rename ("Name", "FirstName", table);;
 restriction ("Gender", "Male", table);;
 
 (* Task 2: Relational algebra engine. *)
+
 (* Function "lookup" takes a string and a database.
    Returns table of specified name. *)
 let rec lookup (var, env) =
