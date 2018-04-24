@@ -300,7 +300,7 @@ recommendOddsMove (gen_games X game) X;;
 
 
 (* Alternative solution Task E: (Using task C).
-   _WARNING_  slow and complicated method. *)
+   _WARNING_  very slow method. *)
 (* Function "terminal_nodes" takes a game tree and returns the number of terminal nodes. *)
 let rec terminal_nodes gt =
   match gt with
