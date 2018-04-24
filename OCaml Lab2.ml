@@ -197,15 +197,9 @@ let rec winTree gt piece =
       (X_wins,X)     -> [b]
     | (O_wins,O)     -> [b]
     | _              -> [])
-  | Level (b,gl::t) -> if searchWin gl piece
-                       then b::(winTree gl piece)
-                       else loop t piece
-and loop gl piece =
-  match gl with
-    []   -> []
-  | gt::t -> if searchWin gt piece
-            then winTree gt piece
-            else loop t piece;;
+  | Level (b,gl::t) -> if winTree gl piece = []
+                       then winTree (Level(b,t)) piece
+                       else b::winTree gl piece;;
 
 (* Example: *)
 winTree (gen_games X game) X;;
