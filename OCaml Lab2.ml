@@ -237,9 +237,10 @@ let rec shortest movelist =
   match movelist with
     []    -> []
   | h::[] -> h
-  | h::t  -> if List.length h < List.length (shortest t)
+  | h::t  -> let next = shortest t in 
+             if List.length h < List.length next
              then h
-             else shortest t;;
+             else next;;
 
 (* Example: *)
 shortest (allWinTree (gen_games X game) X);;
